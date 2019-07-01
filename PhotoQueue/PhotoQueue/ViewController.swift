@@ -40,10 +40,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let theview = UIView(frame: (CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 150)))
         label = UILabel(frame: CGRect(x: 10, y: 30, width: self.view.bounds.width - 20, height: 30))
         label.text = "Download \(Int(slider.value)) photos"
+        label.font = UIFont(name: "AvenirNext-DemiBold", size: 20)
         label.textAlignment = .center
         theview.addSubview(label)
         oldSliderValuue = 0
-        slider.frame = CGRect(x: 10, y: 50, width: self.view.bounds.width - 20, height: 30)
+        slider.frame = CGRect(x: 10, y: 55, width: self.view.bounds.width - 20, height: 30)
         slider.trackWidth = 10
         slider.minimumValue = 0
         slider.maximumValue = 9
@@ -103,6 +104,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @objc func reloadPressed()
     {
         print("reload pressed")
+        label.text = "Downloading \(Int(slider.value)) photos..."
         reloadButton.isEnabled = false
         self.activity.startSpin()
         UIView.animate(withDuration: 0.3, animations: {
@@ -112,6 +114,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.tb.reloadData{
                 self.activity.stopSpin()
                 print("FINISHED")
+                self.label.text = "Downloaded \(Int(self.slider.value)) photos."
                 self.filterButton.isEnabled = true
                 UIView.animate(withDuration: 0.3, animations: {
                     self.filterButton.alpha = 1.0
@@ -126,6 +129,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         UIView.animate(withDuration: 0.3, animations: {
             self.filterButton.alpha = 0.0
         }, completion: { (finished: Bool) in
+            self.label.text = "Filtering \(Int(self.slider.value)) photos..."
             self.filterButton.isEnabled = false
             self.activity.startSpin()
             let cells = self.tb.visibleCells as! [PhotoCell]
@@ -143,6 +147,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     sem.signal()
                     if(ctr < cells.count){
                         self.activity.stopSpin()
+                         self.label.text = "Done filtering \(Int(self.slider.value)) photos."
                     }
                     ctr += 1
                 }
