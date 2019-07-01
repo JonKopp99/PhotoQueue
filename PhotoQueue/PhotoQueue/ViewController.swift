@@ -185,22 +185,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoCell") as! PhotoCell
         let rowKey = photos.allKeys[indexPath.row] as! String
         
-        var image : UIImage?
         DispatchQueue.global().async {
-            guard let imageURL = URL(string:self.photos[rowKey] as! String),
-                let imageData = try? Data(contentsOf: imageURL)
+            let op = DownloadOperation()
+            guard let imageURL = URL(string:self.photos[rowKey] as! String)
                 else {return}
-            
-            image = UIImage(data:imageData)
+            op.imgURL = imageURL
+            op.start()
             DispatchQueue.main.async {
-                if image != nil {
-                    cell.imgView.image = image!
+                    cell.imgView.image = op.outputImage!
                 }
             }
-            
+            return cell
         }
-        return cell
-    }
+    
 }
 
 open class CustomSlider : UISlider {

@@ -17,6 +17,7 @@
 		AB5E78A622C994A900E1C985 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5E78A522C994A900E1C985 /* PhotoCell.swift */; };
 		AB5E78A822C9968C00E1C985 /* PhotosDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = AB5E78A722C9968C00E1C985 /* PhotosDictionary.plist */; };
 		AB5E78AA22C9BFDE00E1C985 /* FilterOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5E78A922C9BFDE00E1C985 /* FilterOperation.swift */; };
+		AB5E78AC22CACF9F00E1C985 /* DownloadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5E78AB22CACF9F00E1C985 /* DownloadOperation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		AB5E78A522C994A900E1C985 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		AB5E78A722C9968C00E1C985 /* PhotosDictionary.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PhotosDictionary.plist; sourceTree = "<group>"; };
 		AB5E78A922C9BFDE00E1C985 /* FilterOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterOperation.swift; sourceTree = "<group>"; };
+		AB5E78AB22CACF9F00E1C985 /* DownloadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadOperation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 				AB5E788322C993B500E1C985 /* Info.plist */,
 				AB5E78A522C994A900E1C985 /* PhotoCell.swift */,
 				AB5E78A922C9BFDE00E1C985 /* FilterOperation.swift */,
+				AB5E78AB22CACF9F00E1C985 /* DownloadOperation.swift */,
 			);
 			path = PhotoQueue;
 			sourceTree = "<group>";
@@ -266,6 +269,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB5E78AC22CACF9F00E1C985 /* DownloadOperation.swift in Sources */,
 				AB5E787A22C993B400E1C985 /* ViewController.swift in Sources */,
 				AB5E78A622C994A900E1C985 /* PhotoCell.swift in Sources */,
 				AB5E787822C993B400E1C985 /* AppDelegate.swift in Sources */,
