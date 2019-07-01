@@ -17,6 +17,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var oldSliderValuue = Int()
     var reloadButton = UIButton()
     var activity = UIActivityIndicatorView()
+    var activityTimer = Timer()
+    var activityHue = 0
+    var filterButton = UIButton()
     override func viewDidLoad() {
         super.viewDidLoad()
         downloadPhotosFromPlist()
@@ -50,7 +53,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         slider.addTarget(self, action: #selector(sliderValueDidChange(_:)), for: .valueChanged)
         theview.addSubview(slider)
         reloadButton = UIButton()
-        reloadButton.frame = CGRect(x: self.view.bounds.width / 2 - 90, y: 90, width: 180, height: 50)
+        reloadButton.frame = CGRect(x: self.view.bounds.width / 2 + 5, y: 90, width: 180, height: 50)
         reloadButton.backgroundColor = #colorLiteral(red: 0.09029659377, green: 0.456161131, blue: 1, alpha: 1).withAlphaComponent(0.9)
         reloadButton.titleLabel?.font = UIFont(name: "Avenir-Book", size: 20.0)
         reloadButton.titleLabel?.adjustsFontSizeToFitWidth = true
@@ -61,8 +64,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         reloadButton.layer.borderWidth = 2
         reloadButton.layer.borderColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
         reloadButton.alpha = 0.0
-        reloadButton.isHidden = true
-        activity.frame = CGRect(x: self.view.bounds.width / 2 - 90, y: 90, width: 180, height: 50)
+        reloadButton.isEnabled = false
+        filterButton.backgroundColor = #colorLiteral(red: 0.09029659377, green: 0.456161131, blue: 1, alpha: 1).withAlphaComponent(0.9)
+        filterButton.titleLabel?.font = UIFont(name: "Avenir-Book", size: 20.0)
+        filterButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        filterButton.setTitleColor(#colorLiteral(red: 1, green: 1, blue: 1, alpha: 1), for: .normal)
+        filterButton.layer.borderWidth = 2
+        filterButton.layer.cornerRadius = 20
+        filterButton.layer.borderColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
+        filterButton.alpha = 0.0
+        filterButton.isEnabled = false
+        filterButton.setTitle("Filter", for: .normal)
+        filterButton.addTarget(self, action:#selector(self.startFilter), for: .touchUpInside)
+        filterButton.frame = CGRect(x: self.view.bounds.width / 2 - 190, y: 90, width: 180, height: 50)
+        theview.addSubview(filterButton)
+        activity.frame = CGRect(x: self.view.bounds.width / 2 - 90, y: 70, width: 180, height: 50)
         theview.addSubview(activity)
         activity.alpha = 0.0
         activity.isHidden = true
@@ -82,7 +98,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     func reloadView()
     {
-        self.reloadButton.isHidden = false
+        self.reloadButton.isEnabled = true
         UIView.animate(withDuration: 0.3, animations: {
             self.tb.frame = CGRect(x: 0, y: 150, width: self.view.bounds.width, height: self.view.bounds.height - 150)
             self.reloadButton.alpha = 1.0
@@ -91,14 +107,67 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @objc func reloadPressed()
     {
         print("reload pressed")
-        reloadButton.isHidden = true
+        reloadButton.isEnabled = false
         self.activity.isHidden = false
         UIView.animate(withDuration: 0.3, animations: {
             self.reloadButton.alpha = 0.0
             self.activity.alpha = 1.0
+        }, completion: { (finished: Bool) in
+            DispatchQueue.main.async{
+            self.activity.startAnimating()
+            self.scheduledTimerWithTimeInterval()
+            self.tb.reloadData{
+                self.activity.stopAnimating()
+                self.activityTimer.invalidate()
+                self.activity.isHidden = true
+                print("FINISHED")
+                self.filterButton.isEnabled = true
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.filterButton.alpha = 1.0
+                    })
+                }
+            }
         })
-        activity.startAnimating()
+        
     }
+    @objc func startFilter()
+    {
+        UIView.animate(withDuration: 0.3, animations: {
+            self.filterButton.alpha = 0.0
+        }, completion: { (finished: Bool) in
+            
+        })
+        self.filterButton.isEnabled = false
+        self.activity.isHidden = false
+        self.activity.startAnimating()
+        self.scheduledTimerWithTimeInterval()
+        DispatchQueue.main.async {
+            let cells = self.tb.visibleCells as! [PhotoCell]
+            for cell in cells
+            {
+                cell.imgView.image = self.applySepiaFilter((cell.imgView.image)!)
+            }
+        
+        }
+//        self.activity.stopAnimating()
+//        self.activityTimer.invalidate()
+//        self.activity.isHidden = true
+        print("NUMSECTIONS", tb.numberOfSections)
+        print("INSEC1", tb.numberOfRows(inSection: 0))
+        
+    }
+    func scheduledTimerWithTimeInterval(){
+        //if timer running is > 10 exit's queue!!! else search for user!
+        activityTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true, block: {_ in
+            if(self.activityHue >= 359)
+            {
+                self.activityHue = 0
+            }
+            self.activity.color = UIColor(hue: (CGFloat(self.activityHue ) * 0.01), saturation: CGFloat(1.0), brightness: CGFloat(1.0), alpha: 1.0)
+            self.activityHue += 1
+        })
+    }
+    
     func downloadPhotosFromPlist()
     {
         DispatchQueue.global(qos: .userInteractive).async {
@@ -114,12 +183,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return Int(slider.value)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 200
     }
+
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoCell") as! PhotoCell
@@ -141,7 +211,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
-
+    func applySepiaFilter(_ image:UIImage) -> UIImage? {
+        let inputImage = CIImage(data:image.pngData()!)
+        let context = CIContext(options:nil)
+        let filter = CIFilter(name:"CISepiaTone")
+        filter?.setValue(inputImage, forKey: kCIInputImageKey)
+        filter!.setValue(1.0, forKey: "inputIntensity")
+        
+        guard let outputImage = filter!.outputImage,
+            let outImage = context.createCGImage(outputImage, from: outputImage.extent) else {
+                return nil
+        }
+        return UIImage(cgImage: outImage)
+    }
    
 
 
@@ -160,5 +242,11 @@ open class CustomSlider : UISlider {
             width: defaultBounds.size.width,
             height: trackWidth
         )
+    }
+}
+extension UITableView {
+    func reloadData(completion: @escaping ()->()) {
+        UIView.animate(withDuration: 0, animations: { self.reloadData() })
+        { _ in completion() }
     }
 }
