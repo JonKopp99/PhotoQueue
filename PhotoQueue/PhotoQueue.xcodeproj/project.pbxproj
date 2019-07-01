@@ -14,6 +14,8 @@
 		AB5E788222C993B500E1C985 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB5E788022C993B500E1C985 /* LaunchScreen.storyboard */; };
 		AB5E788D22C993B500E1C985 /* PhotoQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5E788C22C993B500E1C985 /* PhotoQueueTests.swift */; };
 		AB5E789822C993B500E1C985 /* PhotoQueueUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5E789722C993B500E1C985 /* PhotoQueueUITests.swift */; };
+		AB5E78A622C994A900E1C985 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5E78A522C994A900E1C985 /* PhotoCell.swift */; };
+		AB5E78A822C9968C00E1C985 /* PhotosDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = AB5E78A722C9968C00E1C985 /* PhotosDictionary.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		AB5E789322C993B500E1C985 /* PhotoQueueUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoQueueUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB5E789722C993B500E1C985 /* PhotoQueueUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoQueueUITests.swift; sourceTree = "<group>"; };
 		AB5E789922C993B500E1C985 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AB5E78A522C994A900E1C985 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
+		AB5E78A722C9968C00E1C985 /* PhotosDictionary.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = PhotosDictionary.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,12 +101,14 @@
 		AB5E787622C993B400E1C985 /* PhotoQueue */ = {
 			isa = PBXGroup;
 			children = (
+				AB5E78A722C9968C00E1C985 /* PhotosDictionary.plist */,
 				AB5E787722C993B400E1C985 /* AppDelegate.swift */,
 				AB5E787922C993B400E1C985 /* ViewController.swift */,
 				AB5E787B22C993B400E1C985 /* Main.storyboard */,
 				AB5E787E22C993B500E1C985 /* Assets.xcassets */,
 				AB5E788022C993B500E1C985 /* LaunchScreen.storyboard */,
 				AB5E788322C993B500E1C985 /* Info.plist */,
+				AB5E78A522C994A900E1C985 /* PhotoCell.swift */,
 			);
 			path = PhotoQueue;
 			sourceTree = "<group>";
@@ -232,6 +238,7 @@
 				AB5E788222C993B500E1C985 /* LaunchScreen.storyboard in Resources */,
 				AB5E787F22C993B500E1C985 /* Assets.xcassets in Resources */,
 				AB5E787D22C993B400E1C985 /* Main.storyboard in Resources */,
+				AB5E78A822C9968C00E1C985 /* PhotosDictionary.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +264,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB5E787A22C993B400E1C985 /* ViewController.swift in Sources */,
+				AB5E78A622C994A900E1C985 /* PhotoCell.swift in Sources */,
 				AB5E787822C993B400E1C985 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
