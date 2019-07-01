@@ -22,6 +22,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var filterButton = UIButton()
     override func viewDidLoad() {
         super.viewDidLoad()
+        activityTimer = Timer(timeInterval: 0.01, target: self, selector: #selector(colorWheel), userInfo: nil, repeats: true)
         downloadPhotosFromPlist()
         tb.dataSource = self
         tb.delegate = self
@@ -114,6 +115,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.activity.alpha = 1.0
         }, completion: { (finished: Bool) in
             DispatchQueue.main.async{
+                self.activity.color = .purple
             self.activity.startAnimating()
             self.scheduledTimerWithTimeInterval()
             self.tb.reloadData{
@@ -135,39 +137,67 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         UIView.animate(withDuration: 0.3, animations: {
             self.filterButton.alpha = 0.0
         }, completion: { (finished: Bool) in
+            self.filterButton.isEnabled = false
+            self.activity.isHidden = false
+            self.activity.startAnimating()
             
-        })
-        self.filterButton.isEnabled = false
-        self.activity.isHidden = false
-        self.activity.startAnimating()
-        self.scheduledTimerWithTimeInterval()
-        DispatchQueue.main.async {
+            self.scheduledTimerWithTimeInterval()
             let cells = self.tb.visibleCells as! [PhotoCell]
+            let sem = DispatchSemaphore(value: cells.count)
+            var ctr = 0
             for cell in cells
             {
-                cell.imgView.image = self.applySepiaFilter((cell.imgView.image)!)
+                DispatchQueue.main.async {
+                    sem.wait()
+                    sleep(1)
+                    let op = FilterOperation()
+                    //cell.imgView.image = self.applySepiaFilter((cell.imgView.image)!)
+                    
+                    op.inputImage = (cell.imgView.image)!
+                    op.start()
+                    cell.imgView.image = op.outputImage
+                    sem.signal()
+                    if(ctr < cells.count){
+                        self.activity.stopAnimating()
+                        self.activityTimer.invalidate()
+                        self.activity.isHidden = true
+                    }
+                    ctr += 1
+                }
             }
+        })
         
-        }
-//        self.activity.stopAnimating()
-//        self.activityTimer.invalidate()
-//        self.activity.isHidden = true
+        
+            
+        
+        
+        
         print("NUMSECTIONS", tb.numberOfSections)
-        print("INSEC1", tb.numberOfRows(inSection: 0))
         
     }
     func scheduledTimerWithTimeInterval(){
         //if timer running is > 10 exit's queue!!! else search for user!
-        activityTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true, block: {_ in
-            if(self.activityHue >= 359)
-            {
-                self.activityHue = 0
-            }
-            self.activity.color = UIColor(hue: (CGFloat(self.activityHue ) * 0.01), saturation: CGFloat(1.0), brightness: CGFloat(1.0), alpha: 1.0)
-            self.activityHue += 1
+        self.activityTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true, block: {_ in
+           self.colorWheel()
         })
     }
-    
+    @objc func colorWheel()
+    {
+        if(self.activity.isAnimating == false)
+        {
+            self.activityTimer.invalidate()
+
+            print("Stopped")
+            return
+        }
+        print("Timer Triiggerd")
+        if(self.activityHue >= 359)
+        {
+            self.activityHue = 0
+        }
+        self.activity.color = UIColor(hue: (CGFloat(self.activityHue ) * 0.01), saturation: CGFloat(1.0), brightness: CGFloat(1.0), alpha: 1.0)
+        self.activityHue += 1
+    }
     func downloadPhotosFromPlist()
     {
         DispatchQueue.global(qos: .userInteractive).async {
@@ -200,6 +230,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             guard let imageURL = URL(string:self.photos[rowKey] as! String),
                 let imageData = try? Data(contentsOf: imageURL)
                 else {return}
+            
             image = UIImage(data:imageData)
             DispatchQueue.main.async {
                 if image != nil {
