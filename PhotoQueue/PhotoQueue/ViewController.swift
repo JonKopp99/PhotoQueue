@@ -16,13 +16,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var label = UILabel()
     var oldSliderValuue = Int()
     var reloadButton = UIButton()
-    var activity = UIActivityIndicatorView()
-    var activityTimer = Timer()
-    var activityHue = 0
+    var activity = CustomActivityIndicator()
     var filterButton = UIButton()
     override func viewDidLoad() {
         super.viewDidLoad()
-        activityTimer = Timer(timeInterval: 0.01, target: self, selector: #selector(colorWheel), userInfo: nil, repeats: true)
         downloadPhotosFromPlist()
         tb.dataSource = self
         tb.delegate = self
@@ -82,8 +79,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         activity.frame = CGRect(x: self.view.bounds.width / 2 - 90, y: 70, width: 180, height: 50)
         theview.addSubview(activity)
         activity.alpha = 0.0
-        activity.isHidden = true
-        activity.color = .black
         theview.addSubview(reloadButton)
         self.view.addSubview(theview)
     }
@@ -109,19 +104,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     {
         print("reload pressed")
         reloadButton.isEnabled = false
-        self.activity.isHidden = false
+        self.activity.startSpin()
         UIView.animate(withDuration: 0.3, animations: {
             self.reloadButton.alpha = 0.0
-            self.activity.alpha = 1.0
         }, completion: { (finished: Bool) in
             DispatchQueue.main.async{
-                self.activity.color = .purple
-            self.activity.startAnimating()
-            self.scheduledTimerWithTimeInterval()
             self.tb.reloadData{
-                self.activity.stopAnimating()
-                self.activityTimer.invalidate()
-                self.activity.isHidden = true
+                self.activity.stopSpin()
                 print("FINISHED")
                 self.filterButton.isEnabled = true
                 UIView.animate(withDuration: 0.3, animations: {
@@ -138,10 +127,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.filterButton.alpha = 0.0
         }, completion: { (finished: Bool) in
             self.filterButton.isEnabled = false
-            self.activity.isHidden = false
-            self.activity.startAnimating()
-            
-            self.scheduledTimerWithTimeInterval()
+            self.activity.startSpin()
             let cells = self.tb.visibleCells as! [PhotoCell]
             let sem = DispatchSemaphore(value: cells.count)
             var ctr = 0
@@ -151,16 +137,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     sem.wait()
                     sleep(1)
                     let op = FilterOperation()
-                    //cell.imgView.image = self.applySepiaFilter((cell.imgView.image)!)
-                    
                     op.inputImage = (cell.imgView.image)!
                     op.start()
                     cell.imgView.image = op.outputImage
                     sem.signal()
                     if(ctr < cells.count){
-                        self.activity.stopAnimating()
-                        self.activityTimer.invalidate()
-                        self.activity.isHidden = true
+                        self.activity.stopSpin()
                     }
                     ctr += 1
                 }
@@ -175,29 +157,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         print("NUMSECTIONS", tb.numberOfSections)
         
     }
-    func scheduledTimerWithTimeInterval(){
-        //if timer running is > 10 exit's queue!!! else search for user!
-        self.activityTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true, block: {_ in
-           self.colorWheel()
-        })
-    }
-    @objc func colorWheel()
-    {
-        if(self.activity.isAnimating == false)
-        {
-            self.activityTimer.invalidate()
-
-            print("Stopped")
-            return
-        }
-        print("Timer Triiggerd")
-        if(self.activityHue >= 359)
-        {
-            self.activityHue = 0
-        }
-        self.activity.color = UIColor(hue: (CGFloat(self.activityHue ) * 0.01), saturation: CGFloat(1.0), brightness: CGFloat(1.0), alpha: 1.0)
-        self.activityHue += 1
-    }
+    
     func downloadPhotosFromPlist()
     {
         DispatchQueue.global(qos: .userInteractive).async {
@@ -241,23 +201,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         return cell
     }
-    
-    func applySepiaFilter(_ image:UIImage) -> UIImage? {
-        let inputImage = CIImage(data:image.pngData()!)
-        let context = CIContext(options:nil)
-        let filter = CIFilter(name:"CISepiaTone")
-        filter?.setValue(inputImage, forKey: kCIInputImageKey)
-        filter!.setValue(1.0, forKey: "inputIntensity")
-        
-        guard let outputImage = filter!.outputImage,
-            let outImage = context.createCGImage(outputImage, from: outputImage.extent) else {
-                return nil
-        }
-        return UIImage(cgImage: outImage)
-    }
-   
-
-
 }
 
 open class CustomSlider : UISlider {
@@ -279,5 +222,47 @@ extension UITableView {
     func reloadData(completion: @escaping ()->()) {
         UIView.animate(withDuration: 0, animations: { self.reloadData() })
         { _ in completion() }
+    }
+}
+
+class CustomActivityIndicator : UIActivityIndicatorView {
+    var activityHue = 0.0
+    var timer = Timer()
+    
+    func startSpin()
+    {
+        print("Starting Spin")
+        self.alpha = 1.0
+        self.startAnimating()
+        DispatchQueue.main.async {
+            self.scheduledTimerWithTimeInterval()
+        }
+        
+    }
+    func stopSpin()
+    {
+        print("Stop Spin")
+        self.alpha = 0.0
+        self.stopAnimating()
+        self.timer.invalidate()
+    }
+    
+    func scheduledTimerWithTimeInterval(){
+        // Should stop at certain interval
+        timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true, block: {_ in
+            self.colorWheel()
+        })
+        
+    }
+    
+    func colorWheel()
+    {
+        print("Timer being called")
+        if(self.activityHue >= 1.0)
+        {
+            self.activityHue = 0
+        }
+        self.color = UIColor(hue: (CGFloat(self.activityHue)), saturation: CGFloat(1.0), brightness: CGFloat(1.0), alpha: 1.0)
+        self.activityHue += 0.01
     }
 }

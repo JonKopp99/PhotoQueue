@@ -19,6 +19,7 @@ class FilterOperation: Operation
     }
     
     override func main() {
+        
         let inputImage = CIImage(data:self.inputImage!.pngData()!)
         let context = CIContext(options:nil)
         let filter = CIFilter(name:"CIVignetteEffect")
