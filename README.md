@@ -15,4 +15,4 @@ The second task was a little trickier because it was a larger task then the prev
 
 Created a custom ActivityIndicator that will change its color in a very flashy and exciting way!
 
-![](https://lh3.googleusercontent.com/l4jeiPVIkd_jumIsibyM3Ab2N52JH9i98mMluqkSQtzhbijy6PyDrlnZIpONoOCnJo-u0YZkEx_T)
+![](https://lh3.googleusercontent.com/l4jeiPVIkd_jumIsibyM3Ab2N52JH9i98mMluqkSQtzhbijy6PyDrlnZIpONoOCnJo-u0YZkEx_T)![](https://lh3.googleusercontent.com/dvbgQTcM7i2cZkK5RCjM9_T7xWecWrd_hfKZkdQI6UIajxszmf2dvBUk0YC9efPOdYSfzt0IULlM)
