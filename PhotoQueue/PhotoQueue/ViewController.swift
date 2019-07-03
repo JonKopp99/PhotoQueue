@@ -47,7 +47,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         slider.frame = CGRect(x: 10, y: 55, width: self.view.bounds.width - 20, height: 30)
         slider.trackWidth = 10
         slider.minimumValue = 0
-        slider.maximumValue = 9
+        slider.maximumValue = Float(photos.count - 1)
         slider.isContinuous = true
         slider.addTarget(self, action: #selector(sliderValueDidChange(_:)), for: .valueChanged)
         theview.addSubview(slider)
