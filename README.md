@@ -1,7 +1,7 @@
 
 # Photo Queue
 
-Uses **Operations, GCD,** and **semaphores** to apply filters to images that it downloads from the internet.
+Make School MOB2.3 Project which uses **Operations, GCD,** and **semaphores** to apply filters to images that it downloads from the internet.
 
 ## The Isssue
 
